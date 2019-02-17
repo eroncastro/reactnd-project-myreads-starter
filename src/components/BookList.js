@@ -1,7 +1,7 @@
 import React from 'react';
 import Book from './Book';
 
-class BooksList extends React.Component {
+class BookList extends React.Component {
   render() {
     return (
       <ol className="books-grid">
@@ -23,4 +23,4 @@ class BooksList extends React.Component {
   }
 }
 
-export default BooksList;
+export default BookList;
