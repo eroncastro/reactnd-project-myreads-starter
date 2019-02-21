@@ -2,7 +2,7 @@ import React from 'react';
 import Bookshelf from './Bookshelf';
 import { getAll } from '../BooksAPI';
 
-const bookshelves = {
+export const bookshelves = Object.freeze({
   currentlyReading: {
     title: 'Currently Reading'
   },
@@ -12,7 +12,7 @@ const bookshelves = {
   read: {
     title: 'Read'
   }
-};
+});
 
 class Bookshelves extends React.Component {
   constructor(props) {
@@ -25,6 +25,8 @@ class Bookshelves extends React.Component {
         read: []
       }
     };
+
+    this.changeBookshelf = this.changeBookshelf.bind(this);
   }
 
   componentDidMount() {
@@ -34,6 +36,23 @@ class Bookshelves extends React.Component {
           bookshelves: this._groupBooksIntoShelves(books)
         });
       });
+  }
+
+  changeBookshelf(previousBookInfo, currentBookInfo) {
+    const bookshelves = {
+      ...this.state.bookshelves,
+      [previousBookInfo.shelf]: (
+        this.state.bookshelves[previousBookInfo.shelf].filter(item => {
+          return item.title !== previousBookInfo.title;
+        })
+      ),
+      [currentBookInfo.shelf]: [
+        ...this.state.bookshelves[currentBookInfo.shelf],
+        currentBookInfo
+      ]
+    };
+
+    this.setState({ bookshelves });
   }
 
   _groupBooksIntoShelves(books) {
@@ -65,9 +84,10 @@ class Bookshelves extends React.Component {
 
               return (
                 <Bookshelf
-                  key={id}
+                  key={`${bookshelf}-${id}`}
                   title={bookshelves[bookshelf].title}
                   books={books}
+                  onBookshelfChange={this.changeBookshelf}
                 />
               );
             })

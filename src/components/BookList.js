@@ -6,18 +6,11 @@ class BookList extends React.Component {
     return (
       <ol className="books-grid">
         {this.props.books.map(book => {
-          const {
-            imageLinks: { thumbnail },
-            title,
-            authors
-          } = book;
-
           return (
-            <li key={title}>
+            <li key={book.title}>
               <Book
-                backgroundImage={`url('${thumbnail}')`}
-                title={title}
-                authors={authors}
+                book={book}
+                onBookshelfChange={this.props.onBookshelfChange}
               />
             </li>
           );
