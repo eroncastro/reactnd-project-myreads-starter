@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Bookshelves from './components/Bookshelves';
 import SearchBooks from './components/SearchBooks';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 class BooksApp extends React.Component {
   constructor(props) {
@@ -14,14 +15,13 @@ class BooksApp extends React.Component {
 
   render() {
     return (
-      <div className="app">
-        {this.state.showSearchPage ? (
-          <SearchBooks />
-        ) : (
-          <Bookshelves title={'MyReads'} />
-        )}
-      </div>
-    )
+      <Router>
+        <div className="app">
+          <Route exact path="/" component={() => <Bookshelves title="My Reads" />} />
+          <Route path="/search" component={SearchBooks} />
+        </div>
+      </Router>
+    );
   }
 }
 
