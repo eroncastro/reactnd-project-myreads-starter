@@ -1,5 +1,6 @@
 import React from 'react';
 import { update } from '../BooksAPI';
+import { BOOKSHELVES } from './Bookshelves';
 
 class Book extends React.Component {
   constructor(props) {
@@ -9,13 +10,13 @@ class Book extends React.Component {
   }
 
   _onChange(event) {
-    const currentBookInfo = {...this.props.book, shelf: event.target.value };
+    const book = {...this.props.book, shelf: event.target.value };
 
     update(this.props.book, event.target.value)
-      .then(response => {
+      .then(() => {
         if (typeof this.props.onBookshelfChange !== 'function') return;
 
-        this.props.onBookshelfChange(this.props.book, currentBookInfo);
+        this.props.onBookshelfChange(book);
       })
   }
 
@@ -37,9 +38,13 @@ class Book extends React.Component {
           <div className="book-shelf-changer">
             <select onChange={event => this._onChange(event)} value={shelf}>
               <option value="move" disabled>Move to...</option>
-              <option value="currentlyReading">Currently Reading</option>
-              <option value="wantToRead">Want to Read</option>
-              <option value="read">Read</option>
+              {
+                Object.keys(BOOKSHELVES).map((key, id) => {
+                  return (
+                    <option key={id} value={key}>{BOOKSHELVES[key].title}</option>
+                  );
+                })
+              }
               <option value="none">None</option>
             </select>
           </div>

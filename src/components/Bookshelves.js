@@ -2,7 +2,7 @@ import React from 'react';
 import Bookshelf from './Bookshelf';
 import { getAll } from '../BooksAPI';
 
-export const bookshelves = Object.freeze({
+export const BOOKSHELVES = Object.freeze({
   currentlyReading: {
     title: 'Currently Reading'
   },
@@ -19,11 +19,7 @@ class Bookshelves extends React.Component {
     super(props);
 
     this.state = {
-      bookshelves: {
-        currentlyReading: [],
-        wantToRead: [],
-        read: []
-      }
+      books: []
     };
 
     this.changeBookshelf = this.changeBookshelf.bind(this);
@@ -32,43 +28,24 @@ class Bookshelves extends React.Component {
   componentDidMount() {
     getAll()
       .then(books => {
-        this.setState({
-          bookshelves: this._groupBooksIntoShelves(books)
-        });
+        this.setState({ books });
       });
   }
 
-  changeBookshelf(previousBookInfo, currentBookInfo) {
-    const bookshelves = {
-      ...this.state.bookshelves,
-      [previousBookInfo.shelf]: (
-        this.state.bookshelves[previousBookInfo.shelf].filter(item => {
-          return item.title !== previousBookInfo.title;
-        })
-      ),
-      [currentBookInfo.shelf]: [
-        ...this.state.bookshelves[currentBookInfo.shelf],
-        currentBookInfo
-      ]
-    };
+  changeBookshelf(book) {
+    this.setState(state => {
+      const books = state.books.reduce((prev, cur) => {
+        if (cur.id !== book.id) {
+          return [...prev, cur];
+        } else if (!Object.keys(BOOKSHELVES).includes(book.shelf)) {
+          return prev;
+        } else {
+          return [...prev, book];
+        }
+      }, []);
 
-    this.setState({ bookshelves });
-  }
-
-  _groupBooksIntoShelves(books) {
-    const initialBookshelves = {
-      currentlyReading: [],
-      wantToRead: [],
-      read: []
-    };
-
-    return books.reduce((prev, cur) => {
-      const shelf = {
-        [cur.shelf]: initialBookshelves[cur.shelf].concat(cur)
-      };
-
-      return {...prev, ...shelf};
-    }, initialBookshelves);
+      return { books };
+    })
   }
 
   render() {
@@ -79,14 +56,12 @@ class Bookshelves extends React.Component {
         </div>
         <div className="list-books-content">
           {
-            Object.entries(this.state.bookshelves).map((item, id) => {
-              const [bookshelf, books] = item;
-
+            Object.keys(BOOKSHELVES).map((key, id) => {
               return (
                 <Bookshelf
-                  key={`${bookshelf}-${id}`}
-                  title={bookshelves[bookshelf].title}
-                  books={books}
+                  key={`${key}-${id}`}
+                  title={BOOKSHELVES[key].title}
+                  books={this.state.books.filter(book => book.shelf === key)}
                   onBookshelfChange={this.changeBookshelf}
                 />
               );
