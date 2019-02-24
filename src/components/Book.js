@@ -6,10 +6,10 @@ class Book extends React.Component {
   constructor(props) {
     super(props);
 
-    this._onChange = this._onChange.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  _onChange(event) {
+  handleChange(event) {
     const book = {...this.props.book, shelf: event.target.value };
 
     update(this.props.book, event.target.value)
@@ -20,9 +20,13 @@ class Book extends React.Component {
       })
   }
 
+  _backgroundImage(thumbnail) {
+    return typeof thumbnail === 'string' ? `url('${thumbnail}')` : '';
+  }
+
   render() {
     const {
-      imageLinks: { thumbnail },
+      imageLinks: { thumbnail } = '',
       title,
       authors,
       shelf
@@ -33,10 +37,14 @@ class Book extends React.Component {
         <div className="book-top">
           <div
             className="book-cover"
-            style={{ width: 128, height: 188, backgroundImage: `url('${thumbnail}')` }}>
+            style={{
+              width: 128,
+              height: 188,
+              backgroundImage: this._backgroundImage(thumbnail)
+            }}>
           </div>
           <div className="book-shelf-changer">
-            <select onChange={event => this._onChange(event)} value={shelf}>
+            <select onChange={this.handleChange} value={shelf ? shelf : 'none'}>
               <option value="move" disabled>Move to...</option>
               {
                 Object.keys(BOOKSHELVES).map((key, id) => {

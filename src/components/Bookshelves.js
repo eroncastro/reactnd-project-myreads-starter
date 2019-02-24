@@ -1,6 +1,5 @@
 import React from 'react';
 import Bookshelf from './Bookshelf';
-import { getAll } from '../BooksAPI';
 import { Link } from 'react-router-dom';
 
 export const BOOKSHELVES = Object.freeze({
@@ -16,39 +15,6 @@ export const BOOKSHELVES = Object.freeze({
 });
 
 class Bookshelves extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      books: []
-    };
-
-    this.changeBookshelf = this.changeBookshelf.bind(this);
-  }
-
-  componentDidMount() {
-    getAll()
-      .then(books => {
-        this.setState({ books });
-      });
-  }
-
-  changeBookshelf(book) {
-    this.setState(state => {
-      const books = state.books.reduce((prev, cur) => {
-        if (cur.id !== book.id) {
-          return [...prev, cur];
-        } else if (!Object.keys(BOOKSHELVES).includes(book.shelf)) {
-          return prev;
-        } else {
-          return [...prev, book];
-        }
-      }, []);
-
-      return { books };
-    })
-  }
-
   render() {
     return (
       <div className="list-books">
@@ -62,8 +28,8 @@ class Bookshelves extends React.Component {
                 <Bookshelf
                   key={`${key}-${id}`}
                   title={BOOKSHELVES[key].title}
-                  books={this.state.books.filter(book => book.shelf === key)}
-                  onBookshelfChange={this.changeBookshelf}
+                  books={this.props.books.filter(book => book.shelf === key)}
+                  onBookshelfChange={this.props.onBookshelfChange}
                 />
               );
             })

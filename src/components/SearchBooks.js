@@ -1,17 +1,54 @@
 import React from 'react';
-import BookList from './BookList';
 import { Link } from 'react-router-dom';
+import { debounce } from 'lodash';
+import BookList from './BookList';
+import { search } from '../BooksAPI';
+
+const WAIT_SEARCH_TIME = 1000;
 
 class SearchBooks extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      books: []
+      searchTerm: '',
+      booksFound: []
     };
+
+    this.handleChange = this.handleChange.bind(this);
+    this._searchBooks = this._searchBooks.bind(this);
+  }
+
+  _createHashMap() {
+    return this.props.books.reduce((prev, cur) => {
+      return {...prev, ...{ [cur.title]: cur.shelf }};
+    }, {});
+  }
+
+  handleChange(event) {
+    const searchTerm = event.target.value.trim();
+
+    this.setState({ searchTerm });
+
+    if (searchTerm) {
+      debounce(this._searchBooks, WAIT_SEARCH_TIME)(searchTerm);
+    } else {
+      this.setState({ booksFound: [] })
+    }
+  }
+
+  _searchBooks(term) {
+    search(term)
+      .then(response => {
+        if (response.error) return;
+
+        this.setState({ booksFound: response });
+      });
   }
 
   render() {
+    const hashMap = this._createHashMap();
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -21,20 +58,26 @@ class SearchBooks extends React.Component {
             </button>
           </Link>
           <div className="search-books-input-wrapper">
-            {/*
-              NOTES: The search from BooksAPI is limited to a particular set of search terms.
-              You can find these search terms here:
-              https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-              However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-              you don't find a specific author or title. Every search is limited by search terms.
-            */}
-            <input type="text" placeholder="Search by title or author"/>
+            <input
+              type="text"
+              value={this.state.searchTerm}
+              placeholder="Search by title or author"
+              onChange={this.handleChange}
+            />
           </div>
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            <BookList books={this.state.books} />
+            <BookList
+              books={
+                this.state.booksFound.map(item => {
+                  if (!hashMap.hasOwnProperty(item.title)) return item;
+
+                  return { ...item,  ...{ shelf: hashMap[item.title] } };
+                })
+              }
+              onBookshelfChange={this.props.onBookshelfChange}
+            />
           </ol>
         </div>
       </div>
