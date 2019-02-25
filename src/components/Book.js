@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { update } from '../BooksAPI';
 import { BOOKSHELVES } from './Bookshelves';
 
@@ -22,6 +23,10 @@ class Book extends React.Component {
 
   _backgroundImage(thumbnail) {
     return typeof thumbnail === 'string' ? `url('${thumbnail}')` : '';
+  }
+
+  _authors(authors) {
+    return Array.isArray(authors) ? authors.join(', ') : '';
   }
 
   render() {
@@ -58,10 +63,15 @@ class Book extends React.Component {
           </div>
         </div>
         <div className="book-title">{title}</div>
-        <div className="book-authors">{authors}</div>
+        <div className="book-authors">{this._authors(authors)}</div>
       </div>
     );
   }
 }
+
+Book.propTypes = {
+  book: PropTypes.object,
+  onBookshelfChange: PropTypes.func
+};
 
 export default Book;

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import BookList from './BookList';
 
 class Bookshelf extends React.Component {
@@ -16,5 +17,10 @@ class Bookshelf extends React.Component {
     );
   }
 }
+
+BookList.propTypes = {
+  books: PropTypes.array,
+  onBookshelfChange: PropTypes.func
+};
 
 export default Bookshelf;

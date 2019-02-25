@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { debounce } from 'lodash';
 import BookList from './BookList';
@@ -84,5 +85,10 @@ class SearchBooks extends React.Component {
     );
   }
 }
+
+SearchBooks.propTypes = {
+  books: PropTypes.array,
+  onBookshelfChange: PropTypes.func
+};
 
 export default SearchBooks;

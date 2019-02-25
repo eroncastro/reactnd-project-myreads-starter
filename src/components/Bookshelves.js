@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Bookshelf from './Bookshelf';
 import { Link } from 'react-router-dom';
 
@@ -46,5 +47,10 @@ class Bookshelves extends React.Component {
     );
   }
 }
+
+Bookshelves.propTypes = {
+  books: PropTypes.array,
+  onBookshelfChange: PropTypes.func
+};
 
 export default Bookshelves;
